@@ -1,0 +1,146 @@
+/*
+  Kanbot design tokens
+  Palette idea: chalk-blue paper, deep ink sidebar, ultramarine for action,
+  and ONE amber "spark" colour reserved for everything AI.
+*/
+:root {
+  --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --bg: #f3f5fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f8;
+  --surface-3: #e4e9f4;
+  --line: #e0e5f0;
+  --line-strong: #cbd3e6;
+  --text: #131833;
+  --text-2: #3b4467;
+  --muted: #5a648c;
+
+  --primary: #3d4df0;
+  --primary-hover: #2f3ed9;
+  --primary-soft: #e8ebff;
+  --primary-ink: #2a37c9;
+  --focus: #3d4df0;
+
+  --spark: #ffb224;
+  --spark-hover: #f5a30c;
+  --spark-soft: #fff3d6;
+  --spark-ink: #7a4a00;
+  --spark-line: #f6d78f;
+
+  --ink: #0e1330;
+  --ink-2: #171d45;
+  --ink-line: #262d5c;
+  --ink-text: #e9ecff;
+  --ink-muted: #939bc9;
+  --ink-accent: #8e9bff;
+
+  --danger: #d62f38;
+  --danger-soft: #fde8e9;
+  --success: #12805f;
+  --success-soft: #daf5ea;
+  --warn: #b25e00;
+  --warn-soft: #fff0d9;
+
+  /* status (board columns) */
+  --st-todo: #6b76a0;
+  --st-in_progress: #2d86ee;
+  --st-in_review: #8a5cf0;
+  --st-done: #17a07a;
+  --st-todo-bg: #eceff7;
+  --st-in_progress-bg: #e7f1fe;
+  --st-in_review-bg: #f0e9fe;
+  --st-done-bg: #e2f6ee;
+
+  /* priority */
+  --pr-low: #5f6b95;
+  --pr-medium: #2373d6;
+  --pr-high: #b25e00;
+  --pr-urgent: #cf2b35;
+  --pr-low-bg: #eceff7;
+  --pr-medium-bg: #e7f1fe;
+  --pr-high-bg: #fff0d9;
+  --pr-urgent-bg: #fde8e9;
+  --pr-low-bar: #9aa4c8;
+  --pr-medium-bar: #4b98f2;
+  --pr-high-bar: #f0a030;
+  --pr-urgent-bar: #e5484d;
+
+  /* type */
+  --ty-task: #4a5ae8;
+  --ty-story: #12805f;
+  --ty-bug: #cf2b35;
+
+  --r-sm: 6px;
+  --r: 10px;
+  --r-lg: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(19, 24, 51, 0.06);
+  --shadow: 0 2px 8px rgba(19, 24, 51, 0.08), 0 1px 2px rgba(19, 24, 51, 0.05);
+  --shadow-lg: 0 18px 50px rgba(14, 19, 48, 0.28), 0 4px 12px rgba(14, 19, 48, 0.12);
+
+  --sidebar-w: 268px;
+  --drawer-w: 408px;
+  --topbar-h: 60px;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #090c1f;
+  --surface: #121734;
+  --surface-2: #181e42;
+  --surface-3: #212955;
+  --line: #242c5a;
+  --line-strong: #323c72;
+  --text: #e9ecfb;
+  --text-2: #c2c8e8;
+  --muted: #98a1cc;
+
+  --primary: #7b88ff;
+  --primary-hover: #95a0ff;
+  --primary-soft: #232b66;
+  --primary-ink: #b4bcff;
+  --focus: #9aa5ff;
+
+  --spark-soft: #3a2c0c;
+  --spark-ink: #ffd47a;
+  --spark-line: #6b4c10;
+
+  --ink: #070a1a;
+  --ink-2: #10153a;
+
+  --danger: #ff6b72;
+  --danger-soft: #3d1a22;
+  --success: #38d2a3;
+  --success-soft: #11382f;
+  --warn: #ffb454;
+  --warn-soft: #3b2a10;
+
+  --st-todo: #8f9ac4;
+  --st-in_progress: #5aa6ff;
+  --st-in_review: #a98aff;
+  --st-done: #3ad3a5;
+  --st-todo-bg: #171d41;
+  --st-in_progress-bg: #14264a;
+  --st-in_review-bg: #231d4d;
+  --st-done-bg: #123a34;
+
+  --pr-low: #a2acd6;
+  --pr-medium: #6db3ff;
+  --pr-high: #ffb454;
+  --pr-urgent: #ff7a80;
+  --pr-low-bg: #1f2650;
+  --pr-medium-bg: #15294f;
+  --pr-high-bg: #3b2a10;
+  --pr-urgent-bg: #3d1a22;
+
+  --ty-task: #8c98ff;
+  --ty-story: #3ad3a5;
+  --ty-bug: #ff7a80;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
