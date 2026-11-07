@@ -16,6 +16,29 @@ export function createApp() {
   const app = express();
 
   app.use(helmet());
+
+  // Handle browser CORS preflight requests before route matching.
+  app.use((req, res, next) => {
+    if (req.method !== 'OPTIONS' || !req.path.startsWith('/api/')) {
+      return next();
+    }
+
+    const origin = req.headers.origin;
+    if (!origin || !env.clientOrigins.includes(origin)) {
+      return next();
+    }
+
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      req.headers['access-control-request-headers'] || 'Content-Type, Authorization',
+    );
+    res.setHeader('Access-Control-Max-Age', '600');
+    return res.status(204).end();
+  });
+
   app.use(cors({ origin: env.clientOrigins }));
   app.use(express.json({ limit: '1mb' }));
   if (env.NODE_ENV !== 'test') app.use(requestLogger);
