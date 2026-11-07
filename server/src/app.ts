@@ -32,3 +32,7 @@ export function createApp() {
   app.use(errorHandler);
   return app;
 }
+
+// Vercel's Express runtime requires a default-exported app handler.
+const app = createApp();
+export default app;
