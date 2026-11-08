@@ -15,6 +15,7 @@ import type { HealthResponse } from './types/api.js';
 
 export function createApp() {
   const app = express();
+  app.set('trust proxy', 1); // behind Vercel's proxy: real client IPs for the rate limiter
 
   app.use(helmet());
   app.use(cors({ origin: env.clientOrigins }));

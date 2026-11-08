@@ -1,4 +1,4 @@
-import { list, put } from '@vercel/blob';
+import { del, list, put } from '@vercel/blob';
 import type { NextFunction, Request, Response } from 'express';
 import { seedData } from './seedData.js';
 import { db, type Data } from './store.js';
@@ -8,35 +8,60 @@ import { db, type Data } from './store.js';
  * mirrored to Vercel Blob: loaded before every API request and saved before
  * every write response is sent. Without BLOB_READ_WRITE_TOKEN it does nothing
  * (local development keeps using the JSON file).
+ *
+ * Every save writes a NEW blob (kanbot/db-<timestamp>.json) and loads read the
+ * newest one. Overwriting a single blob is not safe: the CDN keeps serving the
+ * old copy for up to a minute, which made fresh accounts look "logged out".
  */
-const PATHNAME = 'kanbot/db.json';
+const PREFIX = 'kanbot/db-';
+const KEEP = 4;
 const token = process.env.BLOB_READ_WRITE_TOKEN;
 let access: 'public' | 'private' = 'public';
 
-async function save(): Promise<void> {
-  const body = JSON.stringify(db.data);
-  const options = { contentType: 'application/json', addRandomSuffix: false, allowOverwrite: true, cacheControlMaxAge: 60 };
+async function newestFirst() {
+  const { blobs } = await list({ prefix: PREFIX, limit: 1000 });
+  return blobs.sort((a, b) => (a.pathname < b.pathname ? 1 : -1));
+}
+
+async function putVersion(body: string): Promise<void> {
+  const pathname = `${PREFIX}${String(Date.now()).padStart(15, '0')}.json`;
+  const options = { contentType: 'application/json', addRandomSuffix: false };
   try {
-    await put(PATHNAME, body, { ...options, access } as any);
+    await put(pathname, body, { ...options, access } as any);
   } catch (err) {
     if (access !== 'public') throw err;
     access = 'private'; // the store may be private: retry once
-    await put(PATHNAME, body, { ...options, access } as any);
+    await put(pathname, body, { ...options, access } as any);
+  }
+}
+
+async function save(): Promise<void> {
+  await putVersion(JSON.stringify(db.data));
+  try {
+    const blobs = await newestFirst();
+    if (blobs.length > KEEP + 2) await del(blobs.slice(KEEP).map((b) => b.url));
+  } catch (err) {
+    console.error('[blob] cleanup failed', err);
   }
 }
 
 async function load(): Promise<void> {
-  const { blobs } = await list({ prefix: PATHNAME, limit: 1 });
-  const blob = blobs.find((b) => b.pathname === PATHNAME);
-  if (!blob) {
+  const blobs = await newestFirst();
+  if (blobs.length === 0) {
     db.data = structuredClone(seedData) as Data; // first run: start with the demo account
     await save();
     return;
   }
-  const url = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${Date.now()}`;
-  const res = await fetch(url, { headers: { authorization: `Bearer ${token}` }, cache: 'no-store' });
-  if (!res.ok) throw new Error(`blob read failed: ${res.status}`);
-  db.data = { users: [], projects: [], sprints: [], todos: [], ...((await res.json()) as Partial<Data>) };
+  let lastStatus = 0;
+  for (const blob of blobs.slice(0, 3)) {
+    const res = await fetch(blob.url, { headers: { authorization: `Bearer ${token}` }, cache: 'no-store' });
+    if (res.ok) {
+      db.data = { users: [], projects: [], sprints: [], todos: [], ...((await res.json()) as Partial<Data>) };
+      return;
+    }
+    lastStatus = res.status;
+  }
+  throw new Error(`blob read failed: ${lastStatus}`);
 }
 
 export function blobSync() {
