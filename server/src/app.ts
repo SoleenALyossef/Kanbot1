@@ -2,6 +2,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import { env } from './config/env.js';
+import { blobSync } from './db/blobSync.js';
 import { requireAuth } from './middleware/auth.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { requestLogger } from './middleware/requestLogger.js';
@@ -16,31 +17,9 @@ export function createApp() {
   const app = express();
 
   app.use(helmet());
-
-  // Handle browser CORS preflight requests before route matching.
-  app.use((req, res, next) => {
-    if (req.method !== 'OPTIONS' || !req.path.startsWith('/api/')) {
-      return next();
-    }
-
-    const origin = req.headers.origin;
-    if (!origin || !env.clientOrigins.includes(origin)) {
-      return next();
-    }
-
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      req.headers['access-control-request-headers'] || 'Content-Type, Authorization',
-    );
-    res.setHeader('Access-Control-Max-Age', '600');
-    return res.status(204).end();
-  });
-
   app.use(cors({ origin: env.clientOrigins }));
   app.use(express.json({ limit: '1mb' }));
+  app.use(blobSync());
   if (env.NODE_ENV !== 'test') app.use(requestLogger);
 
   app.get('/api/health', (_req, res) => {
@@ -55,7 +34,3 @@ export function createApp() {
   app.use(errorHandler);
   return app;
 }
-
-// Vercel's Express runtime requires a default-exported app handler.
-const app = createApp();
-export default app;
