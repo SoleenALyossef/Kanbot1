@@ -1,0 +1,5 @@
+{
+  "framework": null,
+  "buildCommand": "npx esbuild src/app.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/app.js",
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
+}
