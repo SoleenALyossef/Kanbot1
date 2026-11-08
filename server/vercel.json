@@ -1,13 +1,5 @@
 {
+  "framework": null,
   "buildCommand": "npx esbuild src/app.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/app.js",
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "https://kanbot1-sax7.vercel.app" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
-      ]
-    }
-  ]
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
 }
